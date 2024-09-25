@@ -1,0 +1,60 @@
+Starting with Basic Git Commands on Ubuntu
+==============================================
+The following is a list of useful Git commands to help you get started:
+=========================================================================
+1)Find the changed files in the working directory:
+ git status
+2)Compare codebase states: 
+ git diff
+3)Add changes to your next commit:
+ git add
+4)Add selected changes into your next commit:
+ git add -p
+5)Change the last commit:
+ git commit -amend
+6)Commit all local changes in tracked files:
+ git commit -a
+7)Commit previously staged changes:
+ git commit
+8)Rename a Local branch:
+ git branch -m new-name
+9)List all currently configured remotes:
+ git remote -v
+10)View information about a remote:
+ git remote show
+11)Add a new remote repository:
+ git remote add
+12)Delete a remote repository:
+ git remote remove [remote name]
+13)Download all changes from the remote repository:
+ git fetch
+14)Download all changes from the remote repository and merge into HEAD:
+ git pull branch
+15)Create a new branch with the command:
+ git branch [branch_name]
+16)Set up Git on Ubuntu
+git config --global user.name "your_name"
+git config --global user.email "email@address.com"
+git config --list
+17) GIT PUSH TO REMOTE REPO
+git remote -v
+git ls-remote --get-url origin
+git remote show origin
+git push origin main -f  ---> for force push
+
+The git push command takes two arguments:
+A remote name, for example, origin
+A branch name, for example, main
+git push origin main
+
+
+18)repo with ssh auth in github
+===============================
+1)  ssh-keygen -t rsa -b 4096 -C "mdkhanfem@gmail.com"  ----"your_Git_email@example.com"
+2)git config --global user.name "Your Name"
+3)git config --global user.email "your_email@example.com"
+4)ssh -T git@github.com  ----> to test ssh
+
+
+
+git remote add origin git@github.com:MDKHAN1982/Codes-in-My-Laptop.git
