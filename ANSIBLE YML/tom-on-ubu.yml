@@ -1,0 +1,70 @@
+
+#------------------------------  Method-1  -------------------------------------------------------
+- hosts: test
+  become: true
+  become_method: sudo
+  tasks:
+  - name: apt update
+    ansible.builtin.apt:
+      update_cache: yes
+    become: yes
+  - name: Download Tomcat version 8
+    get_url:
+      url: https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.30/bin/apache-tomcat-10.1.30.tar.gz
+      dest: /opt/
+      mode: '0755'
+      validate_certs: no
+  - name: Unarchive a file that is already on the remote machine
+    ansible.builtin.unarchive:
+      src: /opt/apache-tomcat-10.1.30.tar.gz
+      dest: /opt/
+      remote_src: yes
+      mode: '0755'
+  - name: Install JAVA 1-8
+    become: yes
+    apt:
+      name: openjdk-11-jdk
+      state: present
+      
+  - name: starting TOMCAT 
+    ansible.builtin.shell: nohup /opt/apache-tomcat-10.1.30/bin/startup.sh &
+
+#------------------------------Method- 2       ------------------------------------
+- name: Install Tomcat
+  hosts: test
+  become: true
+  vars:
+    - TOMCAT9_URL : "https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.30/bin/apache-tomcat-10.1.30.tar.gz"
+  tasks:
+  - name: Update apt-get repo and cache
+    apt: update_cache=yes force_apt_get=yes cache_valid_time=3600 
+  - name: Install Java
+    apt:
+      name: openjdk-11-jdk
+      state: present
+  - name: Download Tomcat
+    get_url:
+      url: "{{ TOMCAT9_URL }}"
+      dest: /tmp/
+      validate_certs: no
+  - name: Creating Apache Tomcat home directory.
+    command: mkdir /opt/tomcat    
+  - name: Extract Tomcat
+    shell: tar -xzvf /tmp/apache-tomcat-*tar.gz -C /opt/tomcat --strip-components=1
+  - name: Start Tomcat
+    shell: /opt/tomcat/bin/startup.sh
+    ignore_errors: true
+  - name: Wait for Tomcat to start
+    wait_for:
+      host: localhost
+      port: 8080
+      state: started
+#-----------------------------------------------------------------------
+#------------Deploy----------------------------------------------------
+#============download samplefile for tomcat 10 in ansible server--------
+
+- name: Copy file with owner and permissions
+  ansible.builtin.copy:
+   src:  /etc/ansible/sample.war
+   dest: /opt/apache-tomcat-*/webapps
+   mode: '0777'

@@ -1,0 +1,44 @@
+- hosts: test
+  become: true
+  vars:
+      portis: 9090
+  tasks:
+    - name: ensure the jenkins apt repository key is installed
+      apt_key: url=https://pkg.jenkins.io/debian/jenkins.io-2023.key state=present
+      become: yes
+    - name: ensure the repository is configured
+      apt_repository: repo='deb https://pkg.jenkins.io/debian-stable binary/' state=present
+      become: yes
+    - name: install mutliple packages 
+      apt:
+       name: "{{ item }}"
+       state: present
+      loop:
+       - fontconfig
+       - openjdk-17-jre
+       - jenkins
+    - name: ensure jenkins is installed
+      apt: name=jenkins update_cache=yes
+      become: yes
+    - name: ensure jenkins is started 
+      service: name=jenkins state=stopped
+          # file for changing port no /etc/default/jenkins
+      # HTTP_PORT="8080"
+          # JENKINS_ARGS="--httpPort=XXXX"
+          # sudo lsof -i -n -P | grep jenkins
+          # TO EDIT JENKINS DEFAULT Port
+          # systemctl edit jenkins --- to edit port
+    - name: Port No changed to 8099
+      lineinfile:
+        path: /etc/default/jenkins
+        regexp: '^HTTP_PORT='
+        line: HTTP_PORT={{ portis }}
+      notify: jenkins restarted
+    - name: ensure jenkins is started 
+      service: name=jenkins state=started
+  handlers:
+   - name: jenkins restarted
+     service: name=jenkins state=restarted
+     
+
+

@@ -1,0 +1,12 @@
+- hosts: test
+  become: true
+  tasks:
+  - name: update repository index
+    apt:
+      update_cache: yes
+
+  - name: remove apache2 from ubuntu servers
+    apt:
+      name: apache2
+      state: absent
+# test is group in hosts (invertry file)

@@ -1,0 +1,42 @@
+- hosts: test
+  become: true
+  vars:
+    portes: 8099
+  tasks:
+  - name: Download Jenkins repository file
+    yum_repository:
+      name: jenkins
+      description: jen yum repo
+      baseurl: http://pkg.jenkins.io/redhat-stable
+      gpgkey: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+  - name: yum update
+    yum:
+      name: '*'
+      state: latest
+    become: yes
+  - name: install all the mutliple packages
+    yum:
+      name: "{{ item }}"
+      state: present
+    loop:
+     - java-17-amazon-corretto-devel
+     - fontconfig
+     - jenkins
+  - name: ensure jenkins is started
+    service:
+     name: jenkins
+     state: stoped
+    become : true
+  - name: Port No changed to 8099
+    lineinfile:
+      path: /usr/lib/systemd/system/jenkins.service
+      regexp: '^JENKINS_PORT='
+      line: JENKINS_PORT={{ portes }}
+  - name: restart daemon-reload to pick up config changes
+    systemd:
+        daemon_reload: yes
+  - name: ensure jenkins is started
+    service:
+     name: jenkins
+     state: started
+    become : true

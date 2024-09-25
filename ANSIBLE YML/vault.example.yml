@@ -1,0 +1,8 @@
+- hosts: test
+  become: yes
+  vars_files:
+   vault-pass.yml
+  tasks:
+   - name: Print the echo message
+     debug:
+       msg: "hellow myusername is {{ username }} and password is {{ passwo>
